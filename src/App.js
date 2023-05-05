@@ -1,25 +1,46 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import Loader from './components/Loader';
 
-function App() {
+const App = () => {
+  const [isLoading,setIsLoading] = useState(false);
+  const [error,setError] = useState();
+  const [data,setData] = useState({});
+
+
+  const fetchData = () =>{
+    setIsLoading(true);
+
+    fetch('https://catfact.ninja/fact')
+    .then(function(res){
+      return res.json();
+    })
+    .then(function(res){
+      console.log(res);
+      setData({...res});
+      setIsLoading(false);
+    })
+    .catch(()=>{
+      setError("Unable to fetch data...")
+      setIsLoading(false);
+    })
+    
+  }
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <section className='data-container'>
+        <div className='data'>
+          {
+            isLoading? <Loader/> :
+                        error? error : data.fact
+          }
+        </div>
+        <button onClick={fetchData}>Get Data</button>
+      </section>
+    </>
+  )
 }
 
-export default App;
+export default App
